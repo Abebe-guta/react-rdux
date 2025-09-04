@@ -1,14 +1,17 @@
+import React from "react";
 import PostsList from "./Features/Posts/PostsList";
 import AddPostForm from "./Features/Posts/AddPostForm";
+
 
 function App() {
   
 
   return (
    <main>
-    <AddPostForm />
-    
+    <AddPostForm/>
+
     <PostsList/>
+   
    </main>
   )
 }
