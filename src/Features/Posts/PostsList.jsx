@@ -1,52 +1,63 @@
-import {useSelector, useDispatch} from "react-redux";
-import { selectAllPosts,getPostStatus,getPostsError,fetchPosts } from "./postsSlice";
-import PostsExcerpt from "./PostsExcerpt";
+// src/features/posts/PostsList.jsx
+
+import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { fetchUsers , selectAllUsers} from "../Users/usersSLice";
+
+import {
+  selectPostIds,
+  getPostStatus,
+  getPostsError,
+  fetchPosts
+} from "./postsSlice";
+
+import {
+  fetchUsers,
+  selectAllUsers
+} from "../Users/usersSlice";
+
+import PostsExcerpt from "./PostsExcerpt";
 
 const PostsList = () => {
   const dispatch = useDispatch();
-  const posts = useSelector(selectAllPosts);
+
+  const postIds = useSelector(selectPostIds); // ✅ gets sorted post IDs from entity adapter
   const postStatus = useSelector(getPostStatus);
   const error = useSelector(getPostsError);
-  const users = useSelector(selectAllUsers);
+  const users = useSelector(selectAllUsers); // to ensure users are loaded before displaying posts
 
+  // Fetch posts on mount if status is idle
   useEffect(() => {
     if (postStatus === "idle") {
       dispatch(fetchPosts());
     }
   }, [postStatus, dispatch]);
 
-   useEffect(() => {
+  // Fetch users if not already fetched
+  useEffect(() => {
     if (users.length === 0) {
       dispatch(fetchUsers());
     }
   }, [users.length, dispatch]);
 
-  
-let content;
+  // Conditionally render content based on load status
+  let content;
 
-  if (users.length === 0 || postStatus === "loading") {
+  if (postStatus === "loading" || users.length === 0) {
     content = <p>Loading...</p>;
   } else if (postStatus === "succeeded") {
-    const orderedPosts = posts
-      .slice()
-      .sort((a, b) => b.date.localeCompare(a.date));
-
-    content = orderedPosts.map(post => 
-      <PostsExcerpt key={post.id} post={post} />
-    );
+    content = postIds.map((postId) => (
+      <PostsExcerpt key={postId} postId={postId} />
+    ));
   } else if (postStatus === "failed") {
     content = <p>Error: {error}</p>;
   }
+
   return (
     <section className="posts-list">
       <h2>Posts</h2>
-    
-
       {content}
-     
     </section>
   );
-}
-export default PostsList
+};
+
+export default PostsList;

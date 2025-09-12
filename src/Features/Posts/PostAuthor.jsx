@@ -1,17 +1,12 @@
 import { useSelector } from "react-redux";
 import { selectAllUsers } from "../Users/usersSlice"; // double-check this path/spelling
-import { useMemo } from "react";
 
 const PostAuthor = ({ userId }) => {
-  const users = useSelector(selectAllUsers);
+    const users = useSelector(selectAllUsers)
 
-  const author = useMemo(() => {
-    const match = users.find(user => String(user.id) === String(userId));
-    console.log("Author lookup:", { userId, users, match });
-    return match;
-  }, [users, userId]);
+    const author = users.find(user => user.id.toString() === userId.toString());
+    console.log("PostAuthor userId:", userId, "Users:", users);
 
-  return <span>By {author ? author.username : "Unknown Author"}</span>;
-};
-
-export default PostAuthor;
+    return <span>by {author ? author.name : 'Unknown author'}</span>
+}
+export default PostAuthor
